@@ -1,0 +1,21 @@
+myenv/
+
+app/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+app/model/
+
+app/model/pytorch_model.bin
+app/model/spiece.model
+
+*.bin
+*.model
+
+*.egg-info/
+pip-wheel-metadata/
+tokenizers_install_log.txt
+
+# GCP account key
+MLOps Service Account.json
