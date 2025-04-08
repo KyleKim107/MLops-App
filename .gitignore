@@ -5,6 +5,10 @@ app/__pycache__/
 *.pyo
 *.pyd
 
+# app/model/
+
+app/model/pytorch_model.bin
+app/model/spiece.model
 
 *.bin
 *.model
