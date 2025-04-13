@@ -12,6 +12,7 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 
 COPY ./app /code/app
+RUN mkdir ./model
 
 
 CMD ["fastapi", "run", "app/main.py", "--port", "80"]

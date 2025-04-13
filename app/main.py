@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from transformers import pipeline
 from pydantic import BaseModel
+from mlopslib import MLOpsGCSClient
 import logging
 
 
@@ -18,11 +19,23 @@ Twitter declined to comment on the development.
 The development comes at a time when the micro-blogging platform has been engaged in a tussle with the Indian government over the new social media rules. The government has slammed Twitter for deliberate defiance and failure to comply with the country’s new IT rules.
 """
 
+GCP_KEY_FILE = {
+    #private info
+  
+}
+
 
 def load_model():
+    client = MLOpsGCSClient(GCP_KEY_FILE) # gs://mlops-library/nlp-model/config.json
+    model_list = ['config.json' , 'pytorch_model.bin', 'special_tokens_map.json', 'spiece.model', 'tokenizer.json', 'tokenizer_config.json']
+    blob_base = 'nlp-model'
+
+    for model_name in model_list:
+        client.download_model(bucket_name="mlops-library",
+                            blob_name=f"{blob_base}/{model_name}",
+                            dest_file_path=f"./model/{model_name}")
     print("start model load")
     model = pipeline("summarization", model="./model", framework="pt")
-    # model.load_model("t5", "./model", use_gpu =False)
     print("finish model load")
     return model
 
