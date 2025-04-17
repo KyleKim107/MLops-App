@@ -64,4 +64,4 @@ uvicorn==0.30.1
 uvloop==0.21.0
 watchfiles==1.0.4
 websockets==15.0.1
-git+https://KyleKim107:github_pat_11ANMI5YY0Na2q8YNvgc4_9dKDqIvKzavfsoCfAdg6o0t9SPFrTEyI5t2kpM4rdASXB2MJ2N58WPdjo7X@github.com/KyleKim107/mlops-library.git
+git+https://KyleKim107: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@github.com/KyleKim107/mlops-library.git
