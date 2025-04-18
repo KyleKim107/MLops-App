@@ -15,10 +15,11 @@ jobs:
         image: docker:20.10.16-dind
         options: --privileged
     steps:
-      - name: Before script - Prepare environment
+      - name: Authenticate with GCP
         run: |
-          echo "$GCP_KEY" > ./key.json
-          cat ./key.json | docker login -u _json_key --password-stdin asia-northeast3-docker.pkg.dev
+          echo "$GCP_KEY" > key.json
+          gcloud auth activate-service-account --key-file=key.json
+          gcloud auth configure-docker --quiet
         env:
           GCP_KEY: ${{ vars.GCP_KEY }}
 
