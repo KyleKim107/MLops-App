@@ -3,7 +3,7 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
@@ -15,6 +15,18 @@ jobs:
         image: docker:20.10.16-dind
         options: --privileged
     steps:
+      - name: Before script - Prepare environment
+        run: |
+          echo "$GCP_KEY" > ./key.json
+          cat ./key.json | docker login -u _json_key --password-stdin asia-northeast3-docker.pkg.dev
+        env:
+          GCP_KEY: ${{ vars.GCP_KEY }}
+
+      - name: Build image
+        run: |
+          docker build . -t asia-northeast3-docker.pkg.dev/mlops-projects-456022/docker/mlops-app
+          docker push asia-northeast3-docker.pkg.dev/mlops-projects-456022/docker/mlops-app
+
       - name: Checkout code
         uses: actions/checkout@v3
 
