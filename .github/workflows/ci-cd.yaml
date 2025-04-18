@@ -17,9 +17,8 @@ jobs:
     steps:
       - name: Authenticate with GCP
         run: |
-          echo "$GCP_KEY" > key.json
-          gcloud auth activate-service-account --key-file=key.json
-          gcloud auth configure-docker --quiet
+          echo "$GCP_KEY" > ./key.json
+          cat ./key.json | docker login -u _json_key --password-stdin asia-northeast3-docker.pkg.dev
         env:
           GCP_KEY: ${{ vars.GCP_KEY }}
 
