@@ -22,6 +22,11 @@ jobs:
         env:
           GCP_KEY: ${{ vars.GCP_KEY }}
 
+      - name: Identify current directory
+        run: |
+          docker build . -t asia-northeast3-docker.pkg.dev/mlops-projects-456022/docker/mlops-app
+          docker push asia-northeast3-docker.pkg.dev/mlops-projects-456022/docker/mlops-app
+
       - name: Build image
         run: |
           docker build . -t asia-northeast3-docker.pkg.dev/mlops-projects-456022/docker/mlops-app
