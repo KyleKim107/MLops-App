@@ -6,52 +6,61 @@ on:
     branches: ["main", "feature/CICD"]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest # build server specs with requirements.
-    container:
-      image: docker:20.10.16
-    services:
-      docker:
-        image: docker:20.10.16-dind
-        options: --privileged
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3 # checkout repo
+  # build:
+  #   runs-on: ubuntu-latest # build server specs with requirements.
+  #   container:
+  #     image: docker:20.10.16
+  #   services:
+  #     docker:
+  #       image: docker:20.10.16-dind
+  #       options: --privileged
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3 # checkout repo
 
-      - name: Authenticate with GCP
-        run: |
-          echo "$GCP_KEY" > ./key.json
-          cat ./key.json | docker login -u _json_key --password-stdin asia-northeast3-docker.pkg.dev
-        env:
-          GCP_KEY: ${{ vars.GCP_KEY }}
+  #     - name: Authenticate with GCP
+  #       run: |
+  #         echo "$GCP_KEY" > ./key.json
+  #         cat ./key.json | docker login -u _json_key --password-stdin asia-northeast3-docker.pkg.dev
+  #       env:
+  #         GCP_KEY: ${{ vars.GCP_KEY }}
 
-      - name: Identify current directory
-        run: |
-          pwd
-          ls
+  #     - name: Identify current directory
+  #       run: |
+  #         pwd
+  #         ls
 
-      - name: Build image
-        run: |
-          docker build . -t asia-northeast3-docker.pkg.dev/mlops-projects-456022/docker/mlops-app
-          docker push asia-northeast3-docker.pkg.dev/mlops-projects-456022/docker/mlops-app
+  #     - name: Build image
+  #       run: |
+  #         docker build . -t asia-northeast3-docker.pkg.dev/mlops-projects-456022/docker/mlops-app
+  #         docker push asia-northeast3-docker.pkg.dev/mlops-projects-456022/docker/mlops-app
 
-      - name: Compile the code
-        run: |
-          echo "Compiling the code..."
-          echo "Compile complete."
+  #     - name: Compile the code
+  #       run: |
+  #         echo "Compiling the code..."
+  #         echo "Compile complete."
 
   deploy:
     runs-on: ubuntu-latest
+    # needs: build
     steps:
-      - name: Install curl
-        run: sudo apt-get update && sudo apt-get install -y curl
+      # - name: Install curl
+      #   run: sudo apt-get update && sudo apt-get install -y curl
 
       - name: Prepare environment (before script)
         run: |
           curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
           sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
           rm argocd-linux-amd64
-          arcocd login $ARGOCD_IP --username $ARGODC_ID --password $ARGOCD_PW --insecure
+          echo "Logging into Argo CD..."
+          argocd login $ARGOCD_IP \
+            --username "$ARGOCD_ID" \
+            --password "$ARGOCD_PW" \
+            --insecure
+        env:
+          ARGOCD_IP: ${{ vars.ARGOCD_IP }}
+          ARGOCD_ID: ${{ vars.ARGOCD_ID }}
+          ARGOCD_PW: ${{ vars.ARGOCD_PW }}
 
       - name: Create App
         run: |
