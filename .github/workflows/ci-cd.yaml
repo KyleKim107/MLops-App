@@ -61,7 +61,7 @@ jobs:
 
       - name: Create App
         run: |
-          argocd app create $GITHUB_REPOSITORY
+          argocd app create $(basename $GITHUB_REPOSITORY)
           echo "Repo name is $GITHUB_REPOSITORY"
           --repo asia-northeast3-docker.pkg.dev
           --helm-chart asia-northeast3-docker.pkg.dev/mlops-projects-456022/helm/mlops-helm
