@@ -42,11 +42,12 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-     steps:
+    steps:
+      - name: Install curl
+        run: sudo apt-get update && sudo apt-get install -y curl
 
       - name: Prepare environment (before script)
         run: |
-          apk add curl
           curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
           sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
           rm argocd-linux-amd64
