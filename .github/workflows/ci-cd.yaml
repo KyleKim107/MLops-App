@@ -6,42 +6,42 @@ on:
     branches: ["main", "feature/CICD"]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest # build server specs with requirements.
-    container:
-      image: docker:20.10.16
-    services:
-      docker:
-        image: docker:20.10.16-dind
-        options: --privileged
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3 # checkout repo
+  # build:
+  #   runs-on: ubuntu-latest # build server specs with requirements.
+  #   container:
+  #     image: docker:20.10.16
+  #   services:
+  #     docker:
+  #       image: docker:20.10.16-dind
+  #       options: --privileged
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3 # checkout repo
 
-      - name: Authenticate with GCP
-        run: |
-          echo "$GCP_KEY" > ./key.json
-          cat ./key.json | docker login -u _json_key --password-stdin asia-northeast3-docker.pkg.dev
-        env:
-          GCP_KEY: ${{ vars.GCP_KEY }}
+  #     - name: Authenticate with GCP
+  #       run: |
+  #         echo "$GCP_KEY" > ./key.json
+  #         cat ./key.json | docker login -u _json_key --password-stdin asia-northeast3-docker.pkg.dev
+  #       env:
+  #         GCP_KEY: ${{ vars.GCP_KEY }}
 
-      - name: Identify current directory
-        run: |
-          pwd
-          ls
+  #     - name: Identify current directory
+  #       run: |
+  #         pwd
+  #         ls
 
-      - name: Build image
-        run: |
-          docker build . -t asia-northeast3-docker.pkg.dev/mlops-projects-456022/docker/mlops-app
-          docker push asia-northeast3-docker.pkg.dev/mlops-projects-456022/docker/mlops-app
+  #     - name: Build image
+  #       run: |
+  #         docker build . -t asia-northeast3-docker.pkg.dev/mlops-projects-456022/docker/mlops-app
+  #         docker push asia-northeast3-docker.pkg.dev/mlops-projects-456022/docker/mlops-app
 
-      - name: Compile the code
-        run: |
-          echo "Compile complete."
+  #     - name: Compile the code
+  #       run: |
+  #         echo "Compile complete."
 
   deploy:
     runs-on: ubuntu-latest
-    needs: build
+    # needs: build
     steps:
 
       - name: Prepare environment (before script)
