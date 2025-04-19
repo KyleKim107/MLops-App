@@ -24,8 +24,8 @@ jobs:
 
       - name: Identify current directory
         run: |
-          docker build . -t asia-northeast3-docker.pkg.dev/mlops-projects-456022/docker/mlops-app
-          docker push asia-northeast3-docker.pkg.dev/mlops-projects-456022/docker/mlops-app
+          pwd
+          ls
 
       - name: Build image
         run: |
