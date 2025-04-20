@@ -6,42 +6,42 @@ on:
     branches: ["main", "feature/CICD"]
 
 jobs:
-  # build:
-  #   runs-on: ubuntu-latest # build server specs with requirements.
-  #   container:
-  #     image: docker:20.10.16
-  #   services:
-  #     docker:
-  #       image: docker:20.10.16-dind
-  #       options: --privileged
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v3 # checkout repo
+  build:
+    runs-on: ubuntu-latest # build server specs with requirements.
+    container:
+      image: docker:20.10.16
+    services:
+      docker:
+        image: docker:20.10.16-dind
+        options: --privileged
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3 # checkout repo
 
-  #     - name: Authenticate with GCP
-  #       run: |
-  #         echo "$GCP_KEY" > ./key.json
-  #         cat ./key.json | docker login -u _json_key --password-stdin asia-northeast3-docker.pkg.dev
-  #       env:
-  #         GCP_KEY: ${{ vars.GCP_KEY }}
+      - name: Authenticate with GCP
+        run: |
+          echo "$GCP_KEY" > ./key.json
+          cat ./key.json | docker login -u _json_key --password-stdin asia-northeast3-docker.pkg.dev
+        env:
+          GCP_KEY: ${{ vars.GCP_KEY }}
 
-  #     - name: Identify current directory
-  #       run: |
-  #         pwd
-  #         ls
+      - name: Identify current directory
+        run: |
+          pwd
+          ls
 
-  #     - name: Build image
-  #       run: |
-  #         docker build . -t asia-northeast3-docker.pkg.dev/mlops-projects-456022/docker/mlops-app
-  #         docker push asia-northeast3-docker.pkg.dev/mlops-projects-456022/docker/mlops-app
+      - name: Build image
+        run: |
+          docker build . -t asia-northeast3-docker.pkg.dev/mlops-projects-456022/docker/mlops-app
+          docker push asia-northeast3-docker.pkg.dev/mlops-projects-456022/docker/mlops-app
 
-  #     - name: Compile the code
-  #       run: |
-  #         echo "Compile complete."
+      - name: Compile the code
+        run: |
+          echo "Compile complete."
 
   deploy:
     runs-on: ubuntu-latest
-    # needs: build
+    needs: build
     steps:
 
       - name: Prepare environment (before script)
@@ -61,20 +61,25 @@ jobs:
 
       - name: Create App
         run: |
-          echo "Repo name is $GITHUB_REPOSITORY"
           echo "basename GITHUB_REPOSITORY is $(basename $GITHUB_REPOSITORY)"
-          argocd app create $(basename $GITHUB_REPOSITORY)
-          echo "Repo name is $GITHUB_REPOSITORY"
-          --repo asia-northeast3-docker.pkg.dev
-          --helm-chart asia-northeast3-docker.pkg.dev/mlops-projects-456022/helm/mlops-helm
-          --helm-set image.name=asia-northeast3-docker.pkg.dev/mlops-projects-456022/docker/mlops-app
-          --revision 0.0.1
-          --dest-server https://kubernetest.default.svc
-          --dest-namespace api
+          REPO_NAME=$(basename $GITHUB_REPOSITORY)
+          argocd app create $REPO_NAME \
+          --repo asia-northeast3-docker.pkg.dev \
+          --helm-chart mlops-projects-456022/helm/mlops-helm \
+          --helm-set image.name=asia-northeast3-docker.pkg.dev/mlops-projects-456022/docker/mlops-app \
+          --revision 0.0.3 \
+          --dest-server https://kubernetes.default.svc \
+          --dest-namespace api \
           --upsert
-          argocd app get $GITHUB_REPOSITORY --hard-refresh
-          argocd app sync $GITHUB_REPOSITORY
-          argocd app action run $GITHUB_REPOSITORY restart --kind Deployment
+
+          echo "Getting latest app state..."
+          argocd app get $REPO_NAME --hard-refresh
+
+          echo "Syncing Argo CD app..."
+          argocd app sync $REPO_NAME
+
+          echo "Restarting deployment..."
+          argocd app actions run $REPO_NAME restart --kind Deployment
 
 
       - name: Deploying the application

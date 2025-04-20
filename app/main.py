@@ -1,11 +1,16 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Header
 from transformers import pipeline
 from pydantic import BaseModel
 from mlopslib import MLOpsGCSClient
 import logging
+from datetime import datetime
+import pytz
+from google.cloud.logging import Client as GCPLoggingClient
+import logging
 
+kst = pytz.timezone('Asia/Seoul')
 
 class Input(BaseModel):
     text: str="""summarize: Twitter’s interim resident grievance officer for India has stepped down, leaving the micro-blogging site without a grievance official as mandated by the new IT rules to address complaints from Indian subscribers, according to a source.
@@ -54,6 +59,7 @@ ml_models = {}
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    GCPLoggingClient().setup_logging()
     # Load the ML model
     logging.basicConfig(level=logging.DEBUG)
     ml_models["nlp_model"] = load_model()
@@ -67,8 +73,16 @@ app = FastAPI(lifespan=lifespan)
 
 
 @app.post("/predict")
-async def predict(input: Input):
+async def predict(input: Input, x_auth_token:str = Header(None)):
+    request_time = datetime.now(kst).strftime('%Y-%m-%d %H:%M:%S')
     print(f"Input to predict: {input}, Type: {type(input)}")
     result = ml_models["nlp_model"](input.text, max_length=50, min_length=10, do_sample=False)[0]["summary_text"]
+    log = {
+        'x_auth_token': x_auth_token,
+        'path': '/predict',
+        'request_time': request_time,
+        'input': input.text,
+        'output': result
+    }
+    logging.info(log)
     return {"result": result}
-    
