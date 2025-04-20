@@ -61,6 +61,8 @@ jobs:
 
       - name: Create App
         run: |
+          echo "Repo name is $GITHUB_REPOSITORY"
+          echo "basename GITHUB_REPOSITORY is $(basename $GITHUB_REPOSITORY)"
           argocd app create $(basename $GITHUB_REPOSITORY)
           echo "Repo name is $GITHUB_REPOSITORY"
           --repo asia-northeast3-docker.pkg.dev
