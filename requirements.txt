@@ -65,3 +65,5 @@ uvloop==0.21.0
 watchfiles==1.0.4
 websockets==15.0.1
 git+https://KyleKim107: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@github.com/KyleKim107/mlops-library.git
+pytz==2024.1
+google-cloud-logging==3.5.0
