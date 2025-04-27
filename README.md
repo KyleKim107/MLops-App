@@ -30,7 +30,6 @@ The architecture supports the following flow:
    - User logs and usage metrics are collected.
    - Logs are forwarded to **Google Cloud Logging** and can be analyzed using **BigQuery**.
 
----
 
 ## 📂 Components
 
@@ -62,11 +61,10 @@ Hosts the model inference service.
 
 ### 🔹 Google Cloud Logging & BigQuery
 - Enables **monitoring**, **log aggregation**, and **analytics** for the deployed model APIs.
-- Supports **counting API calls per user** by analyzing logs, which allows for usage monitoring, rate-limiting, and identifying frequent users.
 - API request logs can be exported from **Google Cloud Logging** to **BigQuery**, where SQL queries can be used to aggregate metrics such as:
   - Number of requests per user.
   - Request patterns over time.
-  - Error rates and success rates.
+![alt text](images/daily_query.png)
 
 
 ## 🚀 Workflow Details
