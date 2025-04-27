@@ -6,7 +6,7 @@ This repository implements the lifecycle of an MLOps pipeline for deploying mach
 - ✅ Reproducible deployments  
 - ✅ Reliable monitoring and logging  
 
-![diagram](../images/diagram.png)
+![diagram](./images/diagram.png)
 
 - For this hands-on implementation, the deployed model is the **T5 NLP model** configured for **text summarization**. The deployed API allows users to input text and receive summarized output. All requests must include a valid **authorized token** for access.
 
@@ -56,8 +56,8 @@ Hosts the model inference service.
 ### 🔹 ArgoCD
 - Manages **continuous deployment** and ensures that the Kubernetes cluster state matches the configurations defined in the Git repository (**GitOps** approach).
 - Supports deployment with **static IP** and **Cloud DNS domain settings** configured via **Google Cloud Platform (GCP)**.
-![alt text](../images/argoCD.png)
-![alt text](../../image/nginx-ingress/nginx-ingrace-congroller.png)
+![alt text](./images/argoCD.png)
+![alt text](./../image/nginx-ingress/nginx-ingrace-congroller.png)
 
 
 ### 🔹 Google Cloud Logging & BigQuery
